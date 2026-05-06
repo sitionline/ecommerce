@@ -686,7 +686,8 @@ function updateMobileCard(p) {
   const bar = document.getElementById('mbar-'+p.rowIndex);
   if (bar) { bar.style.width = score.scorePct+'%'; bar.style.background = scoreColor; }
   updateSummary();
-}-
+}
+
 function calcScore(p) {
   const decisive   = !!p.checks.c1;
   const obligatory = ['c2','c3','c4','c5'].every(k => p.checks[k]);
