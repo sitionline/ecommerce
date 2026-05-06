@@ -196,7 +196,60 @@ td.td-act{text-align:center;padding:5px;background:var(--bg2);}
   .summary{grid-template-columns:1fr 1fr;padding:12px 16px;}
   .legend{padding:0 16px 10px;}
   .main{padding:0 16px 32px;}
+  /* Ocultar tabla en móvil */
+  .table-wrap{display:none;}
+  #empty-state{display:none!important;}
 }
+@media(min-width:769px){
+  /* Ocultar tarjetas en desktop */
+  .mobile-cards{display:none!important;}
+}
+
+/* MOBILE CARDS */
+.mobile-cards{display:flex;flex-direction:column;gap:10px;padding:0 0 20px;}
+.m-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color 0.2s;}
+.m-card.apto-card{border-color:rgba(16,185,129,0.25);}
+.m-card-header{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.m-card-num{font-size:11px;font-family:var(--mono);color:var(--muted);min-width:18px;}
+.m-card-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.m-card-info{flex:1;min-width:0;}
+.m-card-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.m-card-id{font-size:11px;font-family:var(--mono);color:var(--violet);margin-top:1px;}
+.m-card-score{text-align:right;flex-shrink:0;}
+.m-score-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:99px;font-size:10px;font-weight:700;font-family:var(--mono);}
+.m-score-badge.apto{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.25);}
+.m-score-badge.no{background:rgba(239,68,68,0.08);color:var(--red);border:1px solid rgba(239,68,68,0.2);}
+.m-score-badge.empty{background:rgba(90,100,128,0.08);color:var(--muted);border:1px solid var(--border);}
+.m-score-pct{font-size:11px;font-family:var(--mono);font-weight:700;margin-top:3px;}
+.m-card-chevron{color:var(--muted);font-size:12px;transition:transform 0.2s;flex-shrink:0;}
+.m-card.expanded .m-card-chevron{transform:rotate(180deg);}
+.m-card-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border);}
+.m-card.expanded .m-card-body{display:block;}
+.m-card-bar{width:100%;height:3px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:14px;margin-top:12px;}
+.m-card-bar-fill{height:100%;border-radius:99px;transition:width 0.4s;}
+.m-criteria-group{margin-bottom:12px;}
+.m-group-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;padding:3px 0;}
+.m-group-label.dc{color:#ef4444;}
+.m-group-label.oc{color:#f59e0b;}
+.m-group-label.rc{color:#06b6d4;}
+.m-criteria-list{display:flex;flex-direction:column;gap:6px;}
+.m-criterion{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-sm);background:var(--bg2);border:1px solid var(--border);cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.m-criterion:active{background:var(--bg3);}
+.m-cbox{width:20px;height:20px;border-radius:5px;border:2px solid var(--border2);background:var(--bg3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.12s;}
+.m-cbox.on{background:var(--violet);border-color:var(--violet);}
+.m-cbox.on.dc{background:#ef4444;border-color:#ef4444;}
+.m-cbox.on.oc{background:#f59e0b;border-color:#f59e0b;}
+.m-cbox.on.rc{background:#06b6d4;border-color:#06b6d4;}
+.m-cbox svg{width:11px;height:11px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity 0.1s;}
+.m-cbox.on svg{opacity:1;}
+.m-cbox.saving{opacity:0.4;pointer-events:none;}
+.m-crit-text{font-size:12px;color:var(--text);flex:1;line-height:1.3;}
+.m-card-actions{display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);}
+.m-btn-del{flex:1;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:var(--r-sm);color:var(--red);font-family:var(--font);font-size:12px;font-weight:700;padding:10px;cursor:pointer;touch-action:manipulation;}
+.m-empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.m-empty-icon{font-size:40px;margin-bottom:14px;opacity:0.25;}
+.m-empty-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.m-empty-sub{font-size:13px;line-height:1.6;}
 </style>
 </head>
 <body>
@@ -360,6 +413,9 @@ td.td-act{text-align:center;padding:5px;background:var(--bg2);}
       <div class="empty-title">Sin productos aún</div>
       <div class="empty-sub">Agrega tu primer producto para empezar<br>a evaluar si es apto para vender.</div>
     </div>
+
+    <!-- MOBILE CARDS -->
+    <div class="mobile-cards" id="mobile-cards"></div>
   </div>
 
   <!-- INACTIVITY WARNING -->
@@ -398,7 +454,7 @@ let productos = [];
 let currentUser = 'Edward';
 let pinBuffer = '';
 
-// ── INACTIVIDAD ────────────────────────────────────────────
+// - INACTIVIDAD --------------------------------------------
 const INACTIVITY_MS = 5 * 60 * 1000; // 5 minutos
 const WARNING_MS    = 4 * 60 * 1000; // aviso al minuto 4
 
@@ -424,7 +480,7 @@ function initSessionEvents() {
   resetInactivityTimer();
 }
 
-// ── LOGIN ──────────────────────────────────────────────────
+// -- LOGIN --------------------------------------------------
 function setUser(name, btn) {
   currentUser = name;
   document.querySelectorAll('.user-btn').forEach(b => b.classList.remove('active'));
@@ -480,13 +536,13 @@ function updateModalAvatar() {
   document.getElementById('modal-username').textContent = currentUser;
 }
 
-// ── SYNC ───────────────────────────────────────────────────
+// -- SYNC ---------------------------------------------------
 function setSyncStatus(state, txt) {
   document.getElementById('sync-dot').className = 'sync-dot' + (state==='ok'?'':' '+state);
   document.getElementById('sync-txt').textContent = txt;
 }
 
-// ── API ────────────────────────────────────────────────────
+// -- API ----------------------------------------------------
 async function apiFetch(params) {
   setSyncStatus('loading','Sincronizando...');
   try {
@@ -509,7 +565,128 @@ async function loadAll() {
   document.getElementById('loading-overlay').style.display = 'none';
 }
 
-// ── SCORE ──────────────────────────────────────────────────
+const CRIT_LABELS = [
+  ['c1','dc','Resuelve un problema específico'],
+  ['c2','oc','Stock limitado'],
+  ['c3','oc','Ligero y no frágil'],
+  ['c4','oc','Proveedor verificado / buena calificación'],
+  ['c5','oc','No es de temporada'],
+  ['c6','rc','Micronicho'],
+  ['c7','rc','Innovador o poco común'],
+  ['c8','rc','Percepción de valor'],
+  ['c9','rc','Público masivo'],
+  ['c10','rc','No se encuentra en mercado tradicional'],
+  ['c11','rc','Ticket bajo (–30 ud.)'],
+  ['c12','rc','Potencial viral'],
+  ['c13','rc','Tamaño no grande'],
+  ['c14','rc','Sin variaciones complejas de empaque'],
+  ['c15','rc','Puede venderse en combos de cantidades'],
+  ['c16','rc','Efecto wow (genera curiosidad o sorpresa)'],
+  ['c17','rc','Margen mínimo de ganancia (3 USD)']
+];
+
+function renderMobile() {
+  const wrap = document.getElementById('mobile-cards');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+
+  if (!productos.length) {
+    wrap.innerHTML = '<div class="m-empty"><div class="m-empty-icon">📦</div><div class="m-empty-title">Sin productos aún</div><div class="m-empty-sub">Agrega tu primer producto para empezar a evaluar.</div></div>';
+    return;
+  }
+
+  productos.forEach((p, idx) => {
+    const score = calcScore(p);
+    const uname = p.usuario || '';
+    const uIni = INITIALS[uname] || (uname ? uname.slice(0,2).toUpperCase() : '?');
+    const uCls = U_CLASS[uname] || 'u-default';
+    const uStyle = UAV_STYLE[uname] || '';
+    const scoreColor = score.apto ? 'var(--green)' : 'var(--red)';
+    const badgeCls = score.scorePct === 0 ? 'empty' : score.apto ? 'apto' : 'no';
+    const badgeLbl = score.scorePct === 0 ? 'Sin evaluar' : score.apto ? '✓ APTO' : '✕ NO APTO';
+
+    const card = document.createElement('div');
+    card.className = 'm-card' + (score.apto ? ' apto-card' : '');
+    card.id = 'mcard-' + p.rowIndex;
+
+    card.innerHTML = `
+      <div class="m-card-header" onclick="toggleCard(${p.rowIndex})">
+        <div class="m-card-num">${idx+1}</div>
+        <div class="m-card-avatar ${uCls}" style="${uStyle}">${uIni}</div>
+        <div class="m-card-info">
+          <div class="m-card-name">${p.nombre || 'Sin nombre'}</div>
+          <div class="m-card-id">${p.id || '-'}</div>
+        </div>
+        <div class="m-card-score">
+          <div class="m-score-badge ${badgeCls}">${badgeLbl}</div>
+          ${score.scorePct > 0 ? `<div class="m-score-pct" style="color:${scoreColor};text-align:right;">${score.scorePct}%</div>` : ''}
+        </div>
+        <div class="m-card-chevron">▼</div>
+      </div>
+      <div class="m-card-body">
+        <div class="m-card-bar"><div class="m-card-bar-fill" id="mbar-${p.rowIndex}" style="width:${score.scorePct}%;background:${scoreColor};"></div></div>
+        <div class="m-criteria-group">
+          <div class="m-group-label dc">⚡ Decisivo</div>
+          <div class="m-criteria-list" id="mcrit-dc-${p.rowIndex}"></div>
+        </div>
+        <div class="m-criteria-group">
+          <div class="m-group-label oc">Obligatorias</div>
+          <div class="m-criteria-list" id="mcrit-oc-${p.rowIndex}"></div>
+        </div>
+        <div class="m-criteria-group">
+          <div class="m-group-label rc">Recomendadas</div>
+          <div class="m-criteria-list" id="mcrit-rc-${p.rowIndex}"></div>
+        </div>
+        <div class="m-card-actions">
+          <button class="m-btn-del" onclick="deleteProducto(productos.find(x=>x.rowIndex===${p.rowIndex}))">🗑 Eliminar producto</button>
+        </div>
+      </div>`;
+
+    wrap.appendChild(card);
+
+    // Render checkboxes
+    CRIT_LABELS.forEach(([key, type, label]) => {
+      const list = card.querySelector('#mcrit-'+type+'-'+p.rowIndex);
+      if (!list) return;
+      const item = document.createElement('div');
+      item.className = 'm-criterion';
+      item.onclick = () => {
+        const cb = item.querySelector('.m-cbox');
+        toggleCheck(p, key, type, cb);
+        updateMobileCard(p);
+      };
+      const checked = p.checks[key];
+      item.innerHTML = `
+        <div class="m-cbox ${checked ? 'on '+type : ''}" data-key="${key}">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="m-crit-text">${label}</div>`;
+      list.appendChild(item);
+    });
+  });
+}
+
+function toggleCard(rowIndex) {
+  const card = document.getElementById('mcard-' + rowIndex);
+  if (card) card.classList.toggle('expanded');
+}
+
+function updateMobileCard(p) {
+  const card = document.getElementById('mcard-' + p.rowIndex);
+  if (!card) return;
+  const score = calcScore(p);
+  const scoreColor = score.apto ? 'var(--green)' : 'var(--red)';
+  const badgeCls = score.scorePct === 0 ? 'empty' : score.apto ? 'apto' : 'no';
+  const badgeLbl = score.scorePct === 0 ? 'Sin evaluar' : score.apto ? '✓ APTO' : '✕ NO APTO';
+  card.className = 'm-card expanded' + (score.apto ? ' apto-card' : '');
+  const badge = card.querySelector('.m-score-badge');
+  if (badge) { badge.className = 'm-score-badge '+badgeCls; badge.textContent = badgeLbl; }
+  const pct = card.querySelector('.m-score-pct');
+  if (pct) { pct.textContent = score.scorePct+'%'; pct.style.color = scoreColor; }
+  const bar = document.getElementById('mbar-'+p.rowIndex);
+  if (bar) { bar.style.width = score.scorePct+'%'; bar.style.background = scoreColor; }
+  updateSummary();
+}-
 function calcScore(p) {
   const decisive   = !!p.checks.c1;
   const obligatory = ['c2','c3','c4','c5'].every(k => p.checks[k]);
@@ -519,7 +696,7 @@ function calcScore(p) {
   return {apto,scorePct};
 }
 
-// ── RENDER ─────────────────────────────────────────────────
+// -- RENDER -------------------------------------------------
 function renderAll() {
   const tbody = document.getElementById('tbody');
   const empty = document.getElementById('empty-state');
@@ -586,6 +763,7 @@ function renderAll() {
     tbody.appendChild(tr);
   });
   updateSummary();
+  renderMobile();
 }
 
 function renderResult(td,score) {
@@ -604,7 +782,7 @@ function updateSummary() {
   document.getElementById('s-pct').textContent=total>0?Math.round(aptos/total*100)+'%':'—';
 }
 
-// ── TOGGLE ─────────────────────────────────────────────────
+// -- TOGGLE -------------------------------------------------
 async function toggleCheck(p,key,type,cbEl) {
   p.checks[key]=!p.checks[key];
   if(p.checks[key])cbEl.classList.add('on',type); else cbEl.classList.remove('on',type);
@@ -629,7 +807,7 @@ async function saveUpdate(p) {
   catch(e) { toast('Error al guardar: '+e.message,'err'); }
 }
 
-// ── MODAL ──────────────────────────────────────────────────
+// -- MODAL --------------------------------------------------
 function openModal() {
   updateModalAvatar();
   document.getElementById('modal').classList.add('open');
@@ -657,7 +835,7 @@ async function confirmAdd() {
   btn.disabled=false; btn.textContent='✦ Agregar';
 }
 
-// ── DELETE ─────────────────────────────────────────────────
+// -- DELETE -------------------------------------------------
 async function deleteProducto(p) {
   try {
     await apiFetch({action:'deleteRow',rowIndex:p.rowIndex});
@@ -666,7 +844,7 @@ async function deleteProducto(p) {
   } catch(e){toast('Error al eliminar: '+e.message,'err');}
 }
 
-// ── TOAST ──────────────────────────────────────────────────
+// -- TOAST --------------------------------------------------
 function toast(msg,type='ok'){
   const el=document.createElement('div');
   el.className='toast '+type;
@@ -675,7 +853,7 @@ function toast(msg,type='ok'){
   setTimeout(()=>el.remove(),3500);
 }
 
-// ── INIT ───────────────────────────────────────────────────
+// -- INIT ---------------------------------------------------
 document.addEventListener('DOMContentLoaded',()=>{
   const saved=sessionStorage.getItem('val_user');
   if(saved&&USERS[saved]){currentUser=saved;enterApp();}
